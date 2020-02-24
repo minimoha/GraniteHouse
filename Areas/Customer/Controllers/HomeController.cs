@@ -54,7 +54,10 @@ namespace GraniteHouse.Controllers
             List<int> lstShoppingCart = HttpContext.Session.Get<List<int>>("ssShoppingCart");
             if (lstShoppingCart.Count > 0)
             {
-                lstShoppingCart.Remove(id);
+                if (lstShoppingCart.Contains(id))
+                {
+                    lstShoppingCart.Remove(id);
+                }
             }
             HttpContext.Session.Set("ssShoppingCart", lstShoppingCart);
 

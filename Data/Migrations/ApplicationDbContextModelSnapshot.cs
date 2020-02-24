@@ -15,9 +15,30 @@ namespace GraniteHouse.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.11-servicing-32099")
+                .HasAnnotation("ProductVersion", "2.1.14-servicing-32113")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("GraniteHouse.Models.Appointments", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("AppointmentDate");
+
+                    b.Property<string>("CustomerEmail");
+
+                    b.Property<string>("CustomerName");
+
+                    b.Property<string>("CustomerPhoneNumber");
+
+                    b.Property<bool>("isConfirmed");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Appointments");
+                });
 
             modelBuilder.Entity("GraniteHouse.Models.Products", b =>
                 {
@@ -46,6 +67,25 @@ namespace GraniteHouse.Data.Migrations
                     b.HasIndex("SpecialTagId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("GraniteHouse.Models.ProductSelectedForAppointment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AppointmentId");
+
+                    b.Property<int>("ProductId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductSelectedForAppointment");
                 });
 
             modelBuilder.Entity("GraniteHouse.Models.ProductTypes", b =>
@@ -130,6 +170,9 @@ namespace GraniteHouse.Data.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired();
+
                     b.Property<string>("Email")
                         .HasMaxLength(256);
 
@@ -169,6 +212,8 @@ namespace GraniteHouse.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -241,6 +286,17 @@ namespace GraniteHouse.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("GraniteHouse.Models.ApplicationUser", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<string>("Name");
+
+                    b.ToTable("ApplicationUser");
+
+                    b.HasDiscriminator().HasValue("ApplicationUser");
+                });
+
             modelBuilder.Entity("GraniteHouse.Models.Products", b =>
                 {
                     b.HasOne("GraniteHouse.Models.ProductTypes", "ProductTypes")
@@ -251,6 +307,19 @@ namespace GraniteHouse.Data.Migrations
                     b.HasOne("GraniteHouse.Models.SpecialTags", "SpecialTags")
                         .WithMany()
                         .HasForeignKey("SpecialTagId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GraniteHouse.Models.ProductSelectedForAppointment", b =>
+                {
+                    b.HasOne("GraniteHouse.Models.Appointments", "Appointments")
+                        .WithMany()
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GraniteHouse.Models.Products", "Products")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
